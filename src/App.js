@@ -5,13 +5,22 @@ import Alert from './Alert';
 const App = () => {
   const [name, setName] = useState('');
   const [list, setList] = useState([]);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [editID, setEditID] = useState(null);
   const [alert, setAlert] = useState({ show: false, msg: '', type: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('clicked');
+    if (!name) {
+      // alert
+    } else if (name && isEditing) {
+      // edit
+    } else {
+      // alert
+      const newItem = { id: new Date().getTime().toString(), title: name };
+      setList([...list, newItem]);
+      setName('');
+    }
   };
 
   return (
@@ -33,10 +42,12 @@ const App = () => {
         </div>
         <button>submit</button>
       </form>
-      <div className='grocery-container'>
-        <List />
-        <button className='clear-btn'>clear-items</button>
-      </div>
+      {list.length > 0 && (
+        <div className='grocery-container'>
+          <List items={list} />
+          <button className='clear-btn'>clear-items</button>
+        </div>
+      )}
     </section>
   );
 };
