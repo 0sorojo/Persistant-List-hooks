@@ -16,12 +16,22 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name) {
-      // alert
       showAlert(true, 'danger', 'please enter accepted value');
     } else if (name && isEditing) {
-      // edit
+      setList(
+        list.map((item) => {
+          if (item.id === editID) {
+            return { ...item, title: name };
+          }
+          return item;
+        })
+      );
+      setName('');
+      setEditID(null);
+      setIsEditing(false);
+      showAlert(true, 'success', 'value is changed');
     } else {
-      // alert
+      showAlert(true, 'success', 'item added to the list');
       const newItem = { id: new Date().getTime().toString(), title: name };
       setList([...list, newItem]);
       setName('');
@@ -32,11 +42,28 @@ const App = () => {
     setAlert({ show, type, msg });
   };
 
+  const clearList = () => {
+    showAlert(true, 'danger', 'emptied the List');
+    setList('');
+  };
+
+  const handleRemove = (id) => {
+    showAlert(true, 'danger', 'item removed');
+    setList(list.filter((item) => item.id !== id));
+  };
+
+  const handleEdit = (id) => {
+    const specificItem = list.find((item) => item.id === id);
+    setIsEditing(true);
+    setEditID(id);
+    setName(specificItem.title);
+  };
+
   return (
     <>
       <section className='section-center'>
         {alert.show ? (
-          <Alert {...alert} removeAlert={showAlert} />
+          <Alert {...alert} removeAlert={showAlert} list={list} />
         ) : (
           <p className='alert'></p>
         )}
@@ -58,8 +85,14 @@ const App = () => {
         </form>
         {list.length > 0 && (
           <div className='grocery-container'>
-            <List items={list} />
-            <button className='clear-btn'>clear-items</button>
+            <List
+              items={list}
+              removeItem={handleRemove}
+              editItem={handleEdit}
+            />
+            <button className='clear-btn' onClick={clearList}>
+              clear-items
+            </button>
           </div>
         )}
       </section>
